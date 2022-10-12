@@ -2,3 +2,4 @@ json/
 results/
 data/
 *.log
+__pycache__/
