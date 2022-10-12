@@ -273,7 +273,7 @@ class HyFd(object):
         n = self.non_fds.n_new_elements
         comps = sum([e.comps for e in self.efficiency_queue]) - self.oldcomps
         self.oldcomps = comps
-        logging.info("INDUCTION with number of non-FDs:{} | tested pairs:{} | total efficiency:{}".format(n, comps, round(n/comps, 5)) )
+        logging.info("INDUCTION with number of non-FDs:{} | tested pairs:{} | total efficiency:{}".format(n, comps, round(n/comps, 5) if comps != 0 else 0) )
         # print ('\rInduction: Specializing {}/{} new non-FDs'.format(0, n), end='')
         sys.stdout.flush()
         if self.fds is None:
