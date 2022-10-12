@@ -7,6 +7,7 @@ Dataset ncvoter has this kind of FDs and yields different results.
 from __future__ import print_function
 
 import json
+import csv
 import sys
 import logging
 import time
@@ -35,7 +36,7 @@ def read_csv(path, separator=','):
     """
     READ CSV
     """
-    mat = [list(map(str, line.replace('\n','').split(separator))) for line in open(path, 'r', encoding='utf8').readlines()]
+    mat = [line for line in csv.reader(open(path, 'r', encoding='utf8').readlines(), delimiter=separator)]
     return mat
 
 def read_json(path):
