@@ -6,6 +6,7 @@ Dataset ncvoter has this kind of FDs and yields different results.
 """
 from __future__ import print_function
 
+import json
 import sys
 import logging
 import time
@@ -37,6 +38,24 @@ def read_csv(path, separator=','):
     mat = [list(map(str, line.replace('\n','').split(separator))) for line in open(path, 'r', encoding='utf8').readlines()]
     return mat
 
+def read_json(path):
+    """
+    READ JSON
+    """
+    keys = {}
+    mat = []
+    for line in open(path, 'r', encoding='utf8').readlines():
+        obj = json.loads(line)
+        arr = [''] * len(obj)
+        for (key, val) in obj.items():
+            if key not in keys:
+                keys[key] = len(keys)
+            arr[keys[key]] = val
+
+        mat.append(arr)
+
+    return mat
+
 def build_pli(lst):
     '''
     Generates a PLI (position list indexes) given a column in the database (lst) (partition)
@@ -59,10 +78,15 @@ class HyFd(object):
         self.nrecs = 0
         
         t0 = time.time()
-        self.records = read_csv(args.db_path, separator=args.separator)
-        if args.ignore_headers:
-            headers = self.records[0]
-            del self.records[0]
+
+        if args.format =='csv':
+            self.records = read_csv(args.db_path, separator=args.separator)
+            if args.ignore_headers:
+                headers = self.records[0]
+                del self.records[0]
+        elif args.format =='json':
+            self.records = read_json(args.db_path)
+
         self.reading_time = time.time()-t0
 
         self.att_order_map = []
@@ -481,6 +505,7 @@ if __name__ == "__main__":
     __parser__.add_argument('-i', '--ignore_headers', help='Ignore Headers', action='store_true')
     __parser__.add_argument('-l', '--logfile', help='Output to hyfd.log', action='store_true')
     __parser__.add_argument('-r', '--restart', help='Restart file hyfd_results.txt', action='store_true')
+    __parser__.add_argument('-f', '--format', help='Format of the input database', type=str, choices=['csv', 'json'], default='csv')
     __parser__.add_argument(
         '-efft',
         metavar='efficiency threshold',
